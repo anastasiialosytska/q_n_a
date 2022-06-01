@@ -2,26 +2,27 @@ require 'rails_helper'
 
 feature 'User can write an answer to the question' do
   given(:user) { create(:user) }
-  given(:question) { create(:question) }
+  given(:question) { create(:question, user: user) }
 
-  scenario 'Authenticated user gives an answer' do
-    sign_in(user)
-    visit question_path(question)
+  describe 'Authenticated user' do
+    background do
+      sign_in(user)
+      visit question_path(question)
+    end
 
-    fill_in 'Body', with: 'text text text'
-    click_on 'Reply'
+    scenario 'gives an answer' do
+      fill_in 'Body', with: 'text text text'
+      click_on 'Reply'
 
-    expect(page).to have_content 'Your answer successfully added'
-    expect(page).to have_content 'text text text'
-  end
+      expect(page).to have_content 'Your answer successfully added'
+      expect(page).to have_content 'text text text'
+    end
 
-  scenario 'Authenticated user gives an answer with errors' do
-    sign_in(user)
-    visit question_path(question)
+    scenario 'gives an answer with errors' do
+      click_on 'Reply'
 
-    click_on 'Reply'
-
-    expect(page).to have_content "Body can't be blank"
+      expect(page).to have_content "Body can't be blank"
+    end
   end
 
   scenario 'Unauthenticated user tries to gives an answer' do

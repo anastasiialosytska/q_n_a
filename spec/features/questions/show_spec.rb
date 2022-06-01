@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 feature 'Any user can view question and answers' do
-  given(:question) { create(:question) }
+  given(:user) { create(:user) }
+  given(:question) { create(:question, user: user) }
 
   scenario 'Authenticated user can view the question and answers' do
-    user = create(:user)
     sign_in(user)
 
     visit question_path(question)
