@@ -1,7 +1,7 @@
 h1= @question.title
 p= @question.body
 
--if current_user&.id == @question.user_id && user_signed_in?
+-if current_user&.author_of?(@question) && user_signed_in?
   p= link_to 'Delete question', question_path(@question), method: :delete
 
 h4= 'List of answers'
@@ -10,7 +10,7 @@ ul
     li
       div
         = answer.body
-      -if current_user&.id == answer.user_id && user_signed_in?
+      -if current_user&.author_of?(answer) && user_signed_in?
         div
           = link_to 'Delete answer', answer_path(answer), method: :delete
     

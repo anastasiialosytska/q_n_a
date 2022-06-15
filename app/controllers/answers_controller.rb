@@ -9,15 +9,17 @@ class AnswersController < ApplicationController
 
   def create
     @answer = @question.answers.new(answer_params.merge(user_id: current_user.id))
-    
+
     @answer.save ? flash[:notice] = 'Your answer successfully added' : flash[:alert] = "Body can't be blank"
     redirect_to @question
   end
 
   def destroy
-    if current_user.id == @answer.user_id
+    if current_user.author_of?(@answer)
       @answer.destroy
       redirect_to question_path(@answer.question), notice: 'Answer successfully deleted'
+    else
+      flash[:alert] = "You can't delete another user's answer"
     end
   end
 
