@@ -12,12 +12,9 @@ feature 'User can delete his answer' do
 
     within '.answers' do
       click_on 'Delete'
-      save_and_open_page
 
       expect(page).to_not have_content answer.body
     end
-
-    expect(page).to_not have_content answer.body
   end
 
   scenario "User tries to delete someone else's answer" do

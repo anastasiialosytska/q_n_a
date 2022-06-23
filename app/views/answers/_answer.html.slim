@@ -1,7 +1,9 @@
 .answer id="answer-#{answer.id}"
   p= answer.body
+  - if user_signed_in? && current_user&.author_of?(answer.question)
+    p= link_to 'Best answer', update_to_best_answer_answer_path(answer, question_id: answer.question_id), remote: true, id: "best-answer-#{answer.id}"
+
   - if user_signed_in? && answer.persisted? && current_user&.author_of?(answer)
-    p= link_to 'Best answer', update_to_best_answer_answer_path(answer, question_id: answer.question_id), remote: true
     p= link_to "Edit", '#', class: 'edit-answer-link', data: { answer_id: answer.id }
     p= link_to 'Delete', answer_path(answer), method: :delete, remote: true
 

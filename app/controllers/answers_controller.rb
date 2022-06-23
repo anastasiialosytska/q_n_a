@@ -1,8 +1,8 @@
 class AnswersController < ApplicationController
   before_action :authenticate_user!
-  before_action :find_question
+  before_action :find_question, only: :create
   before_action :set_answer, only: [:update, :destroy, :update_to_best_answer]
-  before_action :list_of_answers
+  before_action :get_list_of_answers, only: [:update, :update_to_best_answer]
 
   def create
     @answer = @question.answers.create(answer_params.merge(user_id: current_user.id))
@@ -10,7 +10,6 @@ class AnswersController < ApplicationController
 
   def update
     @answer.update(answer_params)
-    @answers = @question.answers.order(best_answer: :desc, created_at: :asc)
   end
 
   def destroy
@@ -35,8 +34,8 @@ class AnswersController < ApplicationController
     params.require(:answer).permit(:body)
   end
 
-  def list_of_answers
-    @question = Question.find(params[:question_id])
-    @answers = @question.answers.order(best_answer: :desc, created_at: :asc)
+  def get_list_of_answers
+    set_answer
+    @answers = Answer.where(question_id: @answer.question_id).order(best_answer: :desc, created_at: :asc)
   end
 end

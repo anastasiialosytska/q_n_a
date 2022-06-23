@@ -6,14 +6,6 @@ RSpec.describe AnswersController, type: :controller do
 
   before { login(user) }
 
-  # describe 'GET #new' do
-  #   before { get :new, params: { question_id: question.id} }
-
-  #   it 'assigns a Answer to @answer' do
-  #     expect(assigns(:answer)).to be_a_new(Answer)
-  #   end
-  # end
-
   describe 'POST #create' do
     context 'with valid attributes' do
       it 'saves a new answer in the database' do
@@ -80,6 +72,26 @@ RSpec.describe AnswersController, type: :controller do
     it 'redirects to show question' do
       delete :destroy, params: { id: answer }, format: :js
       expect(response).to render_template :destroy
+    end
+  end
+
+  describe 'GET #update_to_best_answer' do
+    before { login(user) }
+
+    let!(:answer) { create(:answer, user: user, question: question) }
+    let!(:current_best_answer) { create(:answer, user: user, question: question, best_answer: true) }
+
+    it 'mark the answer as best' do
+      get :update_to_best_answer, params: { id: answer }, format: :js, xhr: true
+      answer.reload
+      current_best_answer.reload
+      expect(answer.best_answer).to eq true
+      expect(current_best_answer.best_answer).to eq false
+    end
+
+    it 'renders update_to_best_answer view' do
+      get :update_to_best_answer, params: { id: answer }, format: :js, xhr: true
+      expect(response).to render_template :update_to_best_answer
     end
   end
 end
