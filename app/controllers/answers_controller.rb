@@ -1,26 +1,24 @@
 class AnswersController < ApplicationController
   before_action :authenticate_user!
-  before_action :find_question, only: [:new, :create]
-  before_action :set_answer, only: :destroy
-
-  def new
-    @answer = @question.answers.new
-  end
+  before_action :find_question
+  before_action :set_answer, only: [:update, :destroy, :update_to_best_answer]
+  before_action :list_of_answers
 
   def create
-    @answer = @question.answers.new(answer_params.merge(user_id: current_user.id))
+    @answer = @question.answers.create(answer_params.merge(user_id: current_user.id))
+  end
 
-    @answer.save ? flash[:notice] = 'Your answer successfully added' : flash[:alert] = "Body can't be blank"
-    redirect_to @question
+  def update
+    @answer.update(answer_params)
+    @answers = @question.answers.order(best_answer: :desc, created_at: :asc)
   end
 
   def destroy
-    if current_user.author_of?(@answer)
-      @answer.destroy
-      redirect_to question_path(@answer.question), notice: 'Answer successfully deleted'
-    else
-      flash[:alert] = "You can't delete another user's answer"
-    end
+    @answer.destroy if current_user.author_of?(@answer)
+  end
+
+  def update_to_best_answer
+    @answer.mark_as_best if current_user.author_of?(@answer.question)
   end
 
   private
@@ -35,5 +33,10 @@ class AnswersController < ApplicationController
 
   def answer_params
     params.require(:answer).permit(:body)
+  end
+
+  def list_of_answers
+    @question = Question.find(params[:question_id])
+    @answers = @question.answers.order(best_answer: :desc, created_at: :asc)
   end
 end

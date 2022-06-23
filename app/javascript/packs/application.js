@@ -11,3 +11,10 @@ import "channels"
 Rails.start()
 Turbolinks.start()
 ActiveStorage.start()
+
+
+//= require jquery3
+//= require jquery_ujs
+//= require bootstrap-sprockets
+
+require("packs/utilities/answers")
