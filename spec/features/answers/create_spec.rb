@@ -22,6 +22,8 @@ feature 'User can write an answer to the question' do
 
       expect(page).to have_content "Body can't be blank"
     end
+
+    scenario
   end
 
   scenario 'Unauthenticated user tries to gives an answer' do
