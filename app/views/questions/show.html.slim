@@ -2,16 +2,16 @@ h1= @question.title
 p= @question.body
 
 -if current_user&.author_of?(@question) && user_signed_in?
+  p= link_to 'Edit question', edit_question_path(@question)
   p= link_to 'Delete question', question_path(@question), method: :delete
 
-h4= 'List of answers'
-ul
-  -@question.answers.each do |answer|
-    li
-      div
-        = answer.body
-      -if current_user&.author_of?(answer) && user_signed_in?
-        div
-          = link_to 'Delete answer', answer_path(answer), method: :delete
-    
-= render partial: 'answers/creating_form'
+.answers
+  p List of answers
+  = render @answers
+
+= form_with model: [@question, @answer], class: 'new-answer', local: false do |f|
+  = f.label :body, 'Your answer'
+  = f.text_area :body
+  = f.submit 'Reply'
+
+.new-answer-errors
