@@ -1,6 +1,6 @@
 = render 'shared/errors', resource: @question
 
-= form_with model: @question, local: true do |f|
+= form_with model: @question, local: true, direct_upload: true do |f|
   p
     = f.label :title
     = f.text_field :title
@@ -10,4 +10,5 @@
   p
     = f.label :files
     = f.file_field :files, multiple: true
+
   p= f.submit 'Save'

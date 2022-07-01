@@ -1,6 +1,6 @@
 class QuestionsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
-  before_action :load_question, only: [:show, :edit, :update, :destroy]
+  before_action :load_question, only: [:show, :edit, :update, :destroy, :delete_attachment]
 
   def index
     @questions = Question.all
@@ -42,6 +42,13 @@ class QuestionsController < ApplicationController
       redirect_to questions_path, notice: 'Question successfully deleted'
     else
       flash[:alert] = "You can't delete another user's question"
+    end
+  end
+
+  def delete_attachment
+    if current_user.author_of?(@question)
+      @question.files.where(id: params[:file_id]).purge
+      redirect_to @question
     end
   end
 
