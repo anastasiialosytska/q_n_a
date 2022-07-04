@@ -1,5 +1,11 @@
 .answer id="answer-#{answer.id}"
   p= answer.body
+  -if answer.files.attached?
+    - answer.files.each do |file|
+      p= link_to file.filename.to_s, url_for(file)
+      -if current_user&.author_of?(answer)
+        p= link_to 'Delete file', delete_attachment_answer_path(answer, file_id: file.id), remote: true
+
   - if user_signed_in? && current_user&.author_of?(answer.question)
     p= link_to 'Best answer', update_to_best_answer_answer_path(answer, question_id: answer.question_id), remote: true, id: "best-answer-#{answer.id}"
 
@@ -7,7 +13,9 @@
     p= link_to "Edit", '#', class: 'edit-answer-link', data: { answer_id: answer.id }
     p= link_to 'Delete', answer_path(answer), method: :delete, remote: true
 
-    = form_with model: answer, class: 'hidden', html: { id: "edit-answer-#{answer.id}" }, local: false  do |f|
+    = form_with model: answer, class: 'hidden', html: { id: "edit-answer-#{answer.id}" }, local: false, direct_upload: true  do |f|
       = f.label :body, 'Your answer'
       = f.text_area :body
+      = f.label :files
+      = f.file_field :files, multiple: true
       = f.submit 'Save'
